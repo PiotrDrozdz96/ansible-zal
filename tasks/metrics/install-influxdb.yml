@@ -1,0 +1,16 @@
+---
+  - name: "install influx"
+    yum:
+      name: https://dl.influxdata.com/influxdb/releases/influxdb-1.7.1.x86_64.rpm
+      state: present
+  - service:
+      name: influxdb
+      state: started
+
+  - name: "setup database on influxdb"
+    shell: "curl -i -XPOST http://localhost:8086/query --data-urlencode 'q=CREATE DATABASE metrics'"
+  
+  - name: "Restart influxdb"
+    service:
+      name: influxdb
+      state: restarted

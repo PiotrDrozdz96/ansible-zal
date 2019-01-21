@@ -1,0 +1,23 @@
+---
+    - name: "Install http server"
+      yum:
+        name: httpd
+        state: latest
+    - name: "Copy http config"
+      template:
+        src: templates/wp_http.config
+        dest: /etc/httpd/conf.d/blog.conf
+    - name: "copy tar.gz"
+      copy:
+        src: angular.tar.gz
+        dest: ~/angular.tar.gz
+    - name: "Unpack Marvel-Base archive"
+      unarchive:
+        src: ~/angular.tar.gz
+        dest: /var/www
+        remote_src: yes
+    - name: "start httpd server"
+      service:
+        name: httpd
+        state: restarted
+        

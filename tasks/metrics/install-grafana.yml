@@ -1,0 +1,43 @@
+---
+  - name: "install grafana"
+    yum: 
+      name: https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.4.0-1.x86_64.rpm 
+      state: present
+  - name: "copy ini file"
+    copy:
+      src: templates/grafana.ini
+      dest: /etc/grafana/grafana.ini
+  - service:
+      name: "grafana-server"
+      state: restarted
+  - name: Create influxdb datasource
+    grafana_datasource:
+      name: "datasource-influxdb"
+      grafana_url: "http://{{grafana_ip}}:8080"
+      grafana_user: "admin"
+      grafana_password: "admin"
+      org_id: "1"
+      ds_type: "influxdb"
+      url: "http://{{grafana_ip}}:8086"
+      database: "metrics"
+      time_interval: ">10s"
+      tls_ca_cert: "/etc/ssl/certs/ca.pem"
+  - name: "Creates directory"
+    file:
+      path: /var/lib/grafana/dashboards
+      state: directory
+  - name: "copy dashboard file"
+    copy:
+      src: templates/apache.JSON
+      dest: /var/lib/grafana/dashboards/apache.JSON
+  - name: "Import Grafana dashboard"
+    grafana_dashboard:
+      grafana_url: "http://{{grafana_ip}}:8080"
+      grafana_user: "admin"
+      grafana_password: "admin"
+      state: present
+      slug: apache
+      message: Updated by ansible
+      overwrite: yes
+      path: /var/lib/grafana/dashboards/apache.JSON
+    ignore_errors: yes
