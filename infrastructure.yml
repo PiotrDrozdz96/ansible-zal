@@ -3,18 +3,19 @@
   become: yes
   vars:
     app_ips: 
-      - 172.31.27.80
-      - 172.31.25.176
-    domain: adsk-199329.tk
+      - privateIP
+      - privateIP
+    domain: fakeDomain.tk
+    mail: fakeMail@mail.com
   tasks:
     - include_tasks: tasks/install-nginx.yml
 
 - hosts: application_nodes
   become: yes
   vars:
-    app_location: /opt/carrental/carrental.jar
-    app_user: carrent
-    metric_store_ip: 172.31.18.19
+    # app_location: /opt/carrental/carrental.jar
+    # app_user: carrent
+    metric_store_ip: privateIP
   tasks:
     # - include_tasks: tasks/install-car_rental.yml
     - include_tasks: tasks/install-marvel_base.yml
@@ -23,8 +24,8 @@
 - hosts: metrics_nodes
   become: yes
   vars:
-    grafana_ip: 35.159.51.64
-    metric_store_ip: 172.31.18.19
+    grafana_ip: publicIP
+    metric_store_ip: privateIP
   tasks:
     - include_tasks: tasks/metrics/install-influxdb.yml
     - include_tasks: tasks/metrics/install-grafana.yml
